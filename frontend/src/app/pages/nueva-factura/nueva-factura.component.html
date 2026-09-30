@@ -1,0 +1,199 @@
+<div class="page">
+
+  @if (step() === 'form') {
+    <header class="page__header">
+      <h1>Nueva factura</h1>
+      <p class="page__subtitle">Completa los datos y el sistema calcula todo por ti.</p>
+    </header>
+
+    <section class="card">
+      <h2 class="card__title">1. Cliente</h2>
+
+      <form [formGroup]="form">
+        <label class="field">
+          <span class="field__label">Nombre del cliente</span>
+          <input
+            type="text"
+            class="field__input"
+            formControlName="clientName"
+            placeholder="Escribe el nombre del cliente"
+          />
+          @if (form.controls.clientName.touched && form.controls.clientName.invalid) {
+            <span class="field__error">Escribe el nombre del cliente.</span>
+          }
+        </label>
+      </form>
+    </section>
+
+    <section class="card">
+      <h2 class="card__title">2. Valores</h2>
+
+      <form [formGroup]="form" class="invoice-form">
+        <label class="field">
+          <span class="field__label">Valor base</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            class="field__input field__input--money"
+            formControlName="baseValue"
+            placeholder="0"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Descuento (%)</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            class="field__input"
+            formControlName="discountPercentage"
+            placeholder="0"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Flete de envio</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            class="field__input field__input--money"
+            formControlName="shippingValue"
+            placeholder="0"
+          />
+        </label>
+
+        <label class="field">
+          <span class="field__label">Flete asumido por El Puntazo (opcional)</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            class="field__input field__input--money"
+            formControlName="shippingAssumedByCompany"
+            placeholder="0"
+          />
+          <span class="field__hint">Si El Puntazo cubre parte o todo el envio, escribe cuanto aqui. Ese valor se resta del total.</span>
+          @if (shippingAssumedExceedsShipping()) {
+            <span class="field__error">No puede ser mayor al flete de envio.</span>
+          }
+        </label>
+
+        <label class="field">
+          <span class="field__label">Garantia / Devolucion (opcional)</span>
+          <input
+            type="number"
+            inputmode="decimal"
+            class="field__input field__input--money"
+            formControlName="warrantyDeduction"
+            placeholder="0"
+          />
+          <span class="field__hint">Si aplica una garantia o devolucion, escribe el valor aqui. Tambien se resta del total.</span>
+        </label>
+      </form>
+
+      <div class="calc-summary">
+        <div class="calc-summary__row">
+          <span>Valor del descuento</span>
+          <span class="money">{{ discountValue() | cop }}</span>
+        </div>
+        <div class="calc-summary__row">
+          <span>Valor despues del descuento</span>
+          <span class="money">{{ valueAfterDiscount() | cop }}</span>
+        </div>
+        <div class="calc-summary__row">
+          <span>Flete de envio</span>
+          <span class="money">{{ form.controls.shippingValue.value | cop }}</span>
+        </div>
+        @if ((form.controls.shippingAssumedByCompany.value ?? 0) > 0) {
+          <div class="calc-summary__row">
+            <span>Flete asumido por El Puntazo</span>
+            <span class="money">-{{ form.controls.shippingAssumedByCompany.value | cop }}</span>
+          </div>
+        }
+        @if ((form.controls.warrantyDeduction.value ?? 0) > 0) {
+          <div class="calc-summary__row">
+            <span>Garantia / Devolucion</span>
+            <span class="money">-{{ form.controls.warrantyDeduction.value | cop }}</span>
+          </div>
+        }
+        <div class="calc-summary__row calc-summary__row--total">
+          <span>Total</span>
+          <span class="money">{{ total() | cop }}</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="page__actions">
+      <button type="button" class="btn btn--primary btn--block" (click)="goToPreview()">
+        Revisar factura
+      </button>
+    </div>
+  }
+
+  @if (step() === 'preview') {
+    <header class="page__header">
+      <h1>Revisar factura</h1>
+      <p class="page__subtitle">Verifica que todo este correcto antes de finalizar.</p>
+    </header>
+
+    <section class="card preview">
+      <div class="preview__row">
+        <span>Cliente</span>
+        <strong>{{ form.controls.clientName.value }}</strong>
+      </div>
+      <div class="preview__row">
+        <span>Valor base</span>
+        <strong class="money">{{ form.controls.baseValue.value | cop }}</strong>
+      </div>
+      <div class="preview__row">
+        <span>Descuento ({{ form.controls.discountPercentage.value }}%)</span>
+        <strong class="money">-{{ discountValue() | cop }}</strong>
+      </div>
+      <div class="preview__row">
+        <span>Valor despues del descuento</span>
+        <strong class="money">{{ valueAfterDiscount() | cop }}</strong>
+      </div>
+      <div class="preview__row">
+        <span>Flete de envio</span>
+        <strong class="money">{{ form.controls.shippingValue.value | cop }}</strong>
+      </div>
+      @if ((form.controls.shippingAssumedByCompany.value ?? 0) > 0) {
+        <div class="preview__row">
+          <span>Flete asumido por El Puntazo</span>
+          <strong class="money">-{{ form.controls.shippingAssumedByCompany.value | cop }}</strong>
+        </div>
+      }
+      @if ((form.controls.warrantyDeduction.value ?? 0) > 0) {
+        <div class="preview__row">
+          <span>Garantia / Devolucion</span>
+          <strong class="money">-{{ form.controls.warrantyDeduction.value | cop }}</strong>
+        </div>
+      }
+      <div class="preview__row preview__row--total">
+        <span>TOTAL</span>
+        <strong class="money">{{ total() | cop }}</strong>
+      </div>
+    </section>
+
+    <div class="page__actions page__actions--split">
+      <button type="button" class="btn btn--outline" (click)="backToForm()">Editar</button>
+      <button type="button" class="btn btn--primary" [disabled]="saving()" (click)="finalize()">
+        {{ saving() ? 'Guardando...' : 'Finalizar factura' }}
+      </button>
+    </div>
+  }
+
+  @if (step() === 'done') {
+    <section class="done">
+      <div class="done__icon">✓</div>
+      <h1>Factura creada correctamente</h1>
+      <p class="page__subtitle">Factura No. {{ createdInvoiceNumber() }}</p>
+
+      <div class="page__actions page__actions--split">
+        <button type="button" class="btn btn--primary" (click)="downloadPdf()">Descargar PDF</button>
+        <button type="button" class="btn btn--outline" (click)="startAnother()">Nueva factura</button>
+      </div>
+      <button type="button" class="link-btn" (click)="goToHistorial()">Ver mis facturas</button>
+    </section>
+  }
+
+</div>

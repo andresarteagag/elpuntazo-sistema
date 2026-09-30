@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: elpuntazo-backend
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/elpuntazo?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  servlet:
+    multipart:
+      max-file-size: 5MB
+
+server:
+  port: ${SERVER_PORT:8080}
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:CAMBIA_ESTE_VALOR_POR_UNO_SEGURO_DE_AL_MENOS_64_CARACTERES_EN_PRODUCCION}
+    expiration-ms: ${JWT_EXPIRATION_MS:28800000} # 8 horas
+  cors:
+    allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
+  initial-admin:
+    email: ${INITIAL_ADMIN_EMAIL:}
+    password: ${INITIAL_ADMIN_PASSWORD:}
+    name: ${INITIAL_ADMIN_NAME:Administrador}
+
+logging:
+  level:
+    com.elpuntazo: INFO
+    org.springframework.security: WARN

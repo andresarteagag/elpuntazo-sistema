@@ -1,0 +1,16 @@
+.page {
+  max-width: 900px;
+}
+
+.modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+.field__hint {
+  font-size: 12px;
+  color: var(--color-ink-soft);
+  margin: -6px 0 0 0;
+}

@@ -1,0 +1,77 @@
+<div class="page">
+  <div class="toolbar">
+    <h1>Vendedores</h1>
+    <button type="button" class="btn btn--primary" (click)="openCreate()">+ Nuevo vendedor</button>
+  </div>
+
+  @if (loading()) {
+    <p class="page__subtitle">Cargando vendedores...</p>
+  } @else if (sellers().length === 0) {
+    <p class="page__subtitle">Aun no has creado ningun vendedor.</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Correo</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (seller of sellers(); track seller.id) {
+            <tr>
+              <td>{{ seller.name }}</td>
+              <td>{{ seller.email }}</td>
+              <td>
+                <span class="badge" [class.badge--danger]="!seller.active">
+                  {{ seller.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="table__actions">
+                <button type="button" class="link-btn" (click)="openEdit(seller)">Editar</button>
+                <button type="button" class="link-btn" [class.link-btn--danger]="seller.active" (click)="toggleActive(seller)">
+                  {{ seller.active ? 'Desactivar' : 'Activar' }}
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h2>{{ editingSeller() ? 'Editar vendedor' : 'Nuevo vendedor' }}</h2>
+        <form [formGroup]="form" (ngSubmit)="save()" class="modal-form">
+          <label class="field">
+            <span class="field__label">Nombre</span>
+            <input type="text" class="field__input" formControlName="name" />
+          </label>
+          <label class="field">
+            <span class="field__label">Correo</span>
+            <input type="email" class="field__input" formControlName="email" />
+          </label>
+          <label class="field">
+            <span class="field__label">
+              {{ editingSeller() ? 'Nueva contrasena (opcional)' : 'Contrasena' }}
+            </span>
+            <input type="password" class="field__input" formControlName="password" />
+          </label>
+
+          @if (!editingSeller()) {
+            <p class="field__hint">Comparte esta contrasena directamente con el vendedor.</p>
+          }
+
+          <div class="modal__actions">
+            <button type="button" class="btn btn--outline" (click)="closeForm()">Cancelar</button>
+            <button type="submit" class="btn btn--primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

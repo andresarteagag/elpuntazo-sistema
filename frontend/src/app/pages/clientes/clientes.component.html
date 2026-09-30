@@ -1,0 +1,90 @@
+<div class="page">
+  <div class="toolbar">
+    <h1>Clientes</h1>
+    <button type="button" class="btn btn--primary" (click)="openCreate()">+ Nuevo cliente</button>
+  </div>
+
+  <label class="field" style="margin-bottom: 20px;">
+    <span class="field__label">Buscar</span>
+    <input
+      type="text"
+      class="field__input"
+      placeholder="Nombre o identificacion..."
+      [value]="searchTerm()"
+      (input)="onSearchInput($any($event.target).value)"
+    />
+  </label>
+
+  @if (loading()) {
+    <p class="page__subtitle">Cargando clientes...</p>
+  } @else if (clients().length === 0) {
+    <p class="page__subtitle">No se encontraron clientes.</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Identificacion</th>
+            <th>Telefono</th>
+            <th>Estado</th>
+            @if (auth.isAdmin()) { <th></th> }
+          </tr>
+        </thead>
+        <tbody>
+          @for (client of clients(); track client.id) {
+            <tr>
+              <td>{{ client.name }}</td>
+              <td>{{ client.identification || '—' }}</td>
+              <td>{{ client.phone || '—' }}</td>
+              <td>
+                <span class="badge" [class.badge--danger]="!client.active">
+                  {{ client.active ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              @if (auth.isAdmin()) {
+                <td class="table__actions">
+                  <button type="button" class="link-btn" (click)="openEdit(client)">Editar</button>
+                  <button type="button" class="link-btn" [class.link-btn--danger]="client.active" (click)="toggleActive(client)">
+                    {{ client.active ? 'Desactivar' : 'Activar' }}
+                  </button>
+                </td>
+              }
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+  @if (showForm()) {
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h2>{{ editingClient() ? 'Editar cliente' : 'Nuevo cliente' }}</h2>
+        <form [formGroup]="form" (ngSubmit)="save()" class="modal-form">
+          <label class="field">
+            <span class="field__label">Nombre</span>
+            <input type="text" class="field__input" formControlName="name" />
+          </label>
+          <label class="field">
+            <span class="field__label">Identificacion (opcional)</span>
+            <input type="text" class="field__input" formControlName="identification" />
+          </label>
+          <label class="field">
+            <span class="field__label">Telefono (opcional)</span>
+            <input type="text" class="field__input" formControlName="phone" />
+          </label>
+          <label class="field">
+            <span class="field__label">Correo (opcional)</span>
+            <input type="email" class="field__input" formControlName="email" />
+          </label>
+
+          <div class="modal__actions">
+            <button type="button" class="btn btn--outline" (click)="closeForm()">Cancelar</button>
+            <button type="submit" class="btn btn--primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</div>

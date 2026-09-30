@@ -1,0 +1,61 @@
+<div class="shell">
+  <aside class="sidebar">
+    <div class="sidebar__brand">
+      <span class="sidebar__brand-mark">EP</span>
+      <span class="sidebar__brand-name">El Puntazo</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      @if (auth.isAdmin()) {
+        <a routerLink="/dashboard" routerLinkActive="nav-link--active" class="nav-link">Panel</a>
+      }
+      <a routerLink="/facturas/nueva" routerLinkActive="nav-link--active" class="nav-link">Nueva factura</a>
+      <a routerLink="/facturas" routerLinkActive="nav-link--active" [routerLinkActiveOptions]="{exact: true}" class="nav-link">
+        {{ auth.isAdmin() ? 'Todas las facturas' : 'Mis facturas' }}
+      </a>
+      @if (auth.isAdmin()) {
+        <a routerLink="/clientes" routerLinkActive="nav-link--active" class="nav-link">Clientes</a>
+        <a routerLink="/vendedores" routerLinkActive="nav-link--active" class="nav-link">Vendedores</a>
+      }
+    </nav>
+
+    <div class="sidebar__user">
+      <div class="sidebar__user-name">{{ auth.currentUser()?.name }}</div>
+      <div class="sidebar__user-role">{{ auth.isAdmin() ? 'Administrador' : 'Vendedor' }}</div>
+      <button type="button" class="sidebar__logout" (click)="logout()">Cerrar sesion</button>
+    </div>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+
+  <nav class="bottom-nav">
+    @if (auth.isAdmin()) {
+      <a routerLink="/dashboard" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
+        <span>Panel</span>
+      </a>
+    }
+    <a routerLink="/facturas" routerLinkActive="bottom-nav__item--active" [routerLinkActiveOptions]="{exact: true}" class="bottom-nav__item">
+      <span>Facturas</span>
+    </a>
+
+    <a routerLink="/facturas/nueva" routerLinkActive="bottom-nav__item--active" class="bottom-nav__fab">
+      <span class="bottom-nav__fab-plus">+</span>
+      <span class="bottom-nav__fab-label">Nueva</span>
+    </a>
+
+    @if (auth.isAdmin()) {
+      <a routerLink="/clientes" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
+        <span>Clientes</span>
+      </a>
+      <a routerLink="/vendedores" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
+        <span>Vendedores</span>
+      </a>
+    } @else {
+      <button type="button" class="bottom-nav__item bottom-nav__item--button" (click)="logout()">
+        <span>Salir</span>
+      </button>
+    }
+  </nav>
+</div>

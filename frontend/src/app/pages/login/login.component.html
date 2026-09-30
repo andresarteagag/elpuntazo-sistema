@@ -1,0 +1,52 @@
+<div class="login">
+  <div class="login__card">
+    <div class="login__brand">
+      <span class="login__brand-mark">EP</span>
+      <h1>El Puntazo</h1>
+      <p class="login__subtitle">Ingresa con tu correo y contrasena para continuar</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login__form" novalidate>
+      <label class="field">
+        <span class="field__label">Correo</span>
+        <input
+          type="email"
+          formControlName="email"
+          autocomplete="username"
+          placeholder="vendedor@elpuntazo.com"
+          class="field__input"
+        />
+        @if (form.controls.email.touched && form.controls.email.invalid) {
+          <span class="field__error">Ingresa un correo valido.</span>
+        }
+      </label>
+
+      <label class="field">
+        <span class="field__label">Contrasena</span>
+        <div class="field__password">
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            formControlName="password"
+            autocomplete="current-password"
+            placeholder="••••••••"
+            class="field__input"
+          />
+          <button type="button" class="field__toggle" (click)="togglePassword()">
+            {{ showPassword() ? 'Ocultar' : 'Mostrar' }}
+          </button>
+        </div>
+        @if (form.controls.password.touched && form.controls.password.invalid) {
+          <span class="field__error">La contrasena es obligatoria.</span>
+        }
+      </label>
+
+      @if (errorMessage()) {
+        <div class="login__error" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <button type="submit" class="btn btn--primary btn--block" [disabled]="loading()">
+        {{ loading() ? 'Ingresando...' : 'Iniciar sesion' }}
+      </button>
+    </form>
+  </div>
+</div>

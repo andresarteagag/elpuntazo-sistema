@@ -1,0 +1,97 @@
+<div class="page">
+  <header class="page__header">
+    <h1>{{ auth.isAdmin() ? 'Todas las facturas' : 'Mis facturas' }}</h1>
+  </header>
+
+  <div class="filters">
+    <label class="field">
+      <span class="field__label">Buscar por numero</span>
+      <input
+        type="text"
+        class="field__input"
+        placeholder="Ej: A-000012"
+        [(ngModel)]="numberFilter"
+        (ngModelChange)="applyFilters()"
+      />
+    </label>
+    <label class="field">
+      <span class="field__label">Estado</span>
+      <select class="field__input" [(ngModel)]="statusFilter" (ngModelChange)="applyFilters()">
+        <option value="">Todos</option>
+        <option value="ACTIVA">Activa</option>
+        <option value="ANULADA">Anulada</option>
+      </select>
+    </label>
+    <label class="field">
+      <span class="field__label">Desde</span>
+      <input type="date" class="field__input" [(ngModel)]="fromFilter" (change)="applyFilters()" />
+    </label>
+    <label class="field">
+      <span class="field__label">Hasta</span>
+      <input type="date" class="field__input" [(ngModel)]="toFilter" (change)="applyFilters()" />
+    </label>
+  </div>
+
+  @if (loading()) {
+    <p class="page__subtitle">Cargando facturas...</p>
+  } @else if (invoices().length === 0) {
+    <p class="page__subtitle">No se encontraron facturas con estos filtros.</p>
+  } @else {
+    <div class="table-wrapper">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Numero</th>
+            <th>Cliente</th>
+            @if (auth.isAdmin()) { <th>Vendedor</th> }
+            <th>Fecha</th>
+            <th>Total</th>
+            <th>Estado</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (invoice of invoices(); track invoice.id) {
+            <tr>
+              <td>{{ invoice.invoiceNumber }}</td>
+              <td>{{ invoice.clientName }}</td>
+              @if (auth.isAdmin()) { <td>{{ invoice.sellerName }}</td> }
+              <td>{{ invoice.createdAt | date: 'dd/MM/yyyy' }}</td>
+              <td class="money">{{ invoice.totalValue | cop }}</td>
+              <td>
+                <span class="badge" [class.badge--danger]="invoice.status === 'ANULADA'">
+                  {{ invoice.status === 'ACTIVA' ? 'Activa' : 'Anulada' }}
+                </span>
+              </td>
+              <td class="table__actions">
+                <button type="button" class="link-btn" (click)="download(invoice)">PDF</button>
+                @if (auth.isAdmin() && invoice.status === 'ACTIVA') {
+                  <button type="button" class="link-btn link-btn--danger" (click)="askCancel(invoice)">Anular</button>
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button type="button" class="btn btn--outline" (click)="changePage(-1)" [disabled]="page() === 0">Anterior</button>
+      <span>Pagina {{ page() + 1 }} de {{ totalPages() || 1 }}</span>
+      <button type="button" class="btn btn--outline" (click)="changePage(1)" [disabled]="page() + 1 >= totalPages()">Siguiente</button>
+    </div>
+  }
+
+  @if (invoiceToCancel(); as invoice) {
+    <div class="modal-backdrop">
+      <div class="modal">
+        <h2>¿Anular esta factura?</h2>
+        <p>La factura {{ invoice.invoiceNumber }} quedara marcada como anulada. No se elimina y seguira apareciendo en el historial.</p>
+        <div class="modal__actions">
+          <button type="button" class="btn btn--outline" (click)="dismissCancel()">Cancelar</button>
+          <button type="button" class="btn btn--danger" (click)="confirmCancel()">Si, anular</button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

@@ -1,0 +1,181 @@
+.shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* --- Sidebar (escritorio) --- */
+
+.sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  background: var(--color-brand-dark);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5) var(--space-4);
+}
+
+.sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.sidebar__brand-mark {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: white;
+  color: var(--color-brand-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.sidebar__brand-name {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.nav-link--active {
+  background: rgba(255, 255, 255, 0.14);
+  color: white;
+}
+
+.sidebar__user {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: var(--space-4);
+}
+
+.sidebar__user-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.sidebar__user-role {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 12px;
+  margin-bottom: var(--space-3);
+}
+
+.sidebar__logout {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-6);
+  padding-bottom: var(--space-7);
+}
+
+/* --- Bottom nav (celular) --- */
+
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .content {
+    padding: var(--space-4);
+    padding-bottom: 90px; /* espacio para la barra inferior */
+  }
+
+  .bottom-nav {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    padding: 8px 4px calc(8px + env(safe-area-inset-bottom));
+    z-index: 50;
+  }
+
+  .bottom-nav__item {
+    flex: 1;
+    text-align: center;
+    text-decoration: none;
+    color: var(--color-ink-soft);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 2px;
+    background: none;
+    border: none;
+    font-family: inherit;
+  }
+
+  .bottom-nav__item--active {
+    color: var(--color-brand);
+    font-weight: 700;
+  }
+
+  /* Boton central grande: crear factura es la accion mas frecuente */
+  .bottom-nav__fab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--color-ink);
+    margin-top: -28px;
+  }
+
+  .bottom-nav__fab-plus {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-brand);
+    color: white;
+    font-size: 28px;
+    font-weight: 400;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-float);
+  }
+
+  .bottom-nav__fab-label {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-brand);
+    margin-top: 4px;
+  }
+}
