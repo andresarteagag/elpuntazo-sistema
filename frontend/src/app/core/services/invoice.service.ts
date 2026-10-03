@@ -42,13 +42,25 @@ export class InvoiceService {
    * la unica fuente de verdad del documento.
    */
   downloadPdf(id: number, invoiceNumber: string): void {
-    this.http.get(`${this.baseUrl}/${id}/pdf`, { responseType: 'blob' }).subscribe((blob) => {
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `liquidacion-${invoiceNumber}.pdf`;
-      link.click();
-      window.URL.revokeObjectURL(url);
+    this.http.get(`${this.baseUrl}/${id}/pdf`, { responseType: 'blob' }).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `liquidacion-${invoiceNumber}.pdf`;
+        // Firefox exige que el enlace este en el documento para que el
+        // click dispare la descarga.
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        // Se libera la URL en el siguiente ciclo: revocarla de inmediato
+        // cancela la descarga en algunos navegadores.
+        setTimeout(() => window.URL.revokeObjectURL(url), 0);
+      },
+      // El interceptor de errores ya avisa al usuario; este error vacio
+      // existe para que el fallo no quede como excepcion sin capturar.
+      error: () => {},
     });
   }
 }

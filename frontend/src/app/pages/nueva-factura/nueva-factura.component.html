@@ -103,13 +103,13 @@
           <span>Flete de envio</span>
           <span class="money">{{ form.controls.shippingValue.value | cop }}</span>
         </div>
-        @if ((form.controls.shippingAssumedByCompany.value ?? 0) > 0) {
+        @if (form.controls.shippingAssumedByCompany.value > 0) {
           <div class="calc-summary__row">
             <span>Flete asumido por El Puntazo</span>
             <span class="money">-{{ form.controls.shippingAssumedByCompany.value | cop }}</span>
           </div>
         }
-        @if ((form.controls.warrantyDeduction.value ?? 0) > 0) {
+        @if (form.controls.warrantyDeduction.value > 0) {
           <div class="calc-summary__row">
             <span>Garantia / Devolucion</span>
             <span class="money">-{{ form.controls.warrantyDeduction.value | cop }}</span>
@@ -156,13 +156,13 @@
         <span>Flete de envio</span>
         <strong class="money">{{ form.controls.shippingValue.value | cop }}</strong>
       </div>
-      @if ((form.controls.shippingAssumedByCompany.value ?? 0) > 0) {
+      @if (form.controls.shippingAssumedByCompany.value > 0) {
         <div class="preview__row">
           <span>Flete asumido por El Puntazo</span>
           <strong class="money">-{{ form.controls.shippingAssumedByCompany.value | cop }}</strong>
         </div>
       }
-      @if ((form.controls.warrantyDeduction.value ?? 0) > 0) {
+      @if (form.controls.warrantyDeduction.value > 0) {
         <div class="preview__row">
           <span>Garantia / Devolucion</span>
           <strong class="money">-{{ form.controls.warrantyDeduction.value | cop }}</strong>

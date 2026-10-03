@@ -27,10 +27,19 @@ export class AuthService {
     this.currentUserSignal.set(null);
   }
 
+  // Si lo guardado en localStorage quedo corrupto, JSON.parse lanza una
+  // excepcion. Sin este try/catch esa excepcion rompia TODAS las peticiones
+  // (el interceptor llama a getToken en cada una) y la app quedaba muerta
+  // sin forma de recuperarse salvo borrando los datos del navegador.
   getToken(): string | null {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw).token ?? null;
+    try {
+      return (JSON.parse(raw) as LoginResponse).token ?? null;
+    } catch {
+      localStorage.removeItem(STORAGE_KEY);
+      return null;
+    }
   }
 
   private persistSession(response: LoginResponse): void {

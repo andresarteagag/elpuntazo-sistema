@@ -23,6 +23,13 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         notifications.show('Tu sesion expiro. Inicia sesion nuevamente.', 'error');
       } else if (error.status === 403) {
         notifications.show('No tienes permiso para realizar esta accion.', 'error');
+      } else if (error.error instanceof Blob) {
+        // Las descargas de PDF usan responseType 'blob', asi que el cuerpo
+        // del error tambien llega como Blob. Hay que leerlo para poder
+        // mostrar el mensaje real del backend en vez de uno generico.
+        error.error.text().then((text) => {
+          notifications.show(extractMessage(text), 'error');
+        });
       } else {
         const backendMessage = error.error?.message;
         notifications.show(backendMessage || 'Ocurrio un problema inesperado. Intenta nuevamente.', 'error');
@@ -32,3 +39,12 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
     }),
   );
 };
+
+function extractMessage(rawBody: string): string {
+  const fallback = 'Ocurrio un problema inesperado. Intenta nuevamente.';
+  try {
+    return (JSON.parse(rawBody) as { message?: string }).message ?? fallback;
+  } catch {
+    return fallback;
+  }
+}

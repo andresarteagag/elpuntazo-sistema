@@ -10,9 +10,10 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * Los clientes son compartidos entre todos los vendedores, por eso
- * este controlador no restringe por rol (cualquier usuario autenticado
- * -- ADMIN o VENDEDOR -- puede buscar y crear clientes).
+ * El directorio de clientes es una pantalla de administracion: en
+ * SecurityConfig la ruta "/api/clients/**" esta restringida a ADMIN.
+ * Los vendedores no la necesitan porque al crear una factura escriben
+ * el nombre del cliente como texto libre.
  */
 @RestController
 @RequestMapping("/api/clients")

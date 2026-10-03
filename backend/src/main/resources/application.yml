@@ -3,14 +3,30 @@ spring:
     name: elpuntazo-backend
 
   datasource:
-    url: jdbc:mysql://localhost:3306/elpuntazo?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true
+    # La URL completa se toma de DB_URL para poder apuntar a cualquier
+    # servidor (Railway, un VPS, etc.) sin tocar el codigo. El valor por
+    # defecto es la base local de desarrollo.
+    url: ${DB_URL:jdbc:mysql://localhost:3306/elpuntazo?useSSL=false&serverTimezone=America/Bogota&allowPublicKeyRetrieval=true}
     username: ${DB_USERNAME:root}
     password: ${DB_PASSWORD:root}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      # Los proveedores en la nube cierran las conexiones inactivas; con
+      # estos limites la aplicacion reconecta sola en vez de fallar.
+      maximum-pool-size: ${DB_POOL_MAX:10}
+      minimum-idle: ${DB_POOL_MIN:2}
+      connection-timeout: 30000
+      idle-timeout: 300000
+      max-lifetime: 900000
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      # "none" no toca ni revisa el esquema: el esquema se crea una sola vez
+      # con db/schema.sql. Se deja configurable para poder usar "validate"
+      # en desarrollo. Ojo: "validate" falla contra MySQL cuando las columnas
+      # son de tipo ENUM (role, status), porque Hibernate espera VARCHAR.
+      ddl-auto: ${DDL_AUTO:none}
+    open-in-view: false
     show-sql: false
     properties:
       hibernate:
@@ -22,13 +38,21 @@ spring:
       max-file-size: 5MB
 
 server:
-  port: ${SERVER_PORT:8080}
+  # Railway (y la mayoria de plataformas) inyectan el puerto en PORT.
+  # Si no existe, se usa SERVER_PORT y por ultimo 8080.
+  port: ${PORT:${SERVER_PORT:8080}}
+  shutdown: graceful
+  error:
+    include-stacktrace: never
+    include-message: never
 
 app:
   jwt:
     secret: ${JWT_SECRET:CAMBIA_ESTE_VALOR_POR_UNO_SEGURO_DE_AL_MENOS_64_CARACTERES_EN_PRODUCCION}
     expiration-ms: ${JWT_EXPIRATION_MS:28800000} # 8 horas
   cors:
+    # Separar varios origenes con comas. Admite comodines, por ejemplo:
+    #   https://elpuntazo.vercel.app,https://*.vercel.app
     allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
   initial-admin:
     email: ${INITIAL_ADMIN_EMAIL:}

@@ -85,6 +85,9 @@ export class HistorialComponent {
         this.invoiceToCancel.set(null);
         this.load();
       },
+      // Sin esto, al fallar la anulacion la ventana de confirmacion se
+      // quedaba abierta y el usuario no entendia que habia pasado.
+      error: () => this.invoiceToCancel.set(null),
     });
   }
 

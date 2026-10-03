@@ -158,12 +158,27 @@ public class InvoiceService {
         }
     }
 
+    /**
+     * Si la fila contadora todavia no existe (base de datos recien creada
+     * donde no se alcanzo a ejecutar el INSERT de db/schema.sql) se crea
+     * aqui con el numero en cero, en vez de dejar caer la factura con un
+     * error tecnico.
+     */
     private String nextInvoiceNumber() {
-        var sequence = sequenceRepository.lockForUpdate();
+        InvoiceSequence sequence = sequenceRepository.lockForUpdate()
+                .orElseGet(this::createInitialSequence);
+
         long next = sequence.getLastNumber() + 1;
         sequence.setLastNumber(next);
         sequenceRepository.save(sequence);
         return "A-" + String.format("%06d", next);
+    }
+
+    private InvoiceSequence createInitialSequence() {
+        InvoiceSequence sequence = new InvoiceSequence();
+        sequence.setId(1);
+        sequence.setLastNumber(0L);
+        return sequenceRepository.save(sequence);
     }
 }
 
