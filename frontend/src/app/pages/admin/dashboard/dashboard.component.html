@@ -3,37 +3,43 @@
     <h1>Panel</h1>
   </header>
 
-  @if (loading()) {
+  @if (summary(); as s) {
+    <!-- La cifra que de verdad importa de un vistazo. Se destaca por
+         tamano y posicion, no por un bloque de color. -->
+    <section class="headline">
+      <span class="headline__label">Total vendido</span>
+      <p class="headline__value money">{{ s.totalSold | cop }}</p>
+      <span class="headline__caption">Suma de las facturas activas. No incluye las anuladas.</span>
+    </section>
+
+    <!-- Cuatro metricas: 4, 2 o 1 por fila, nunca una suelta. -->
+    <div class="metrics">
+      <div class="metric">
+        <span class="metric__label">Facturas totales</span>
+        <span class="metric__value">{{ s.totalInvoices }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label">Facturas de hoy</span>
+        <span class="metric__value">{{ s.invoicesToday }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label">Vendedores activos</span>
+        <span class="metric__value">{{ s.activeSellers }}</span>
+      </div>
+      <div class="metric">
+        <span class="metric__label">Clientes registrados</span>
+        <span class="metric__value">{{ s.registeredClients }}</span>
+      </div>
+    </div>
+
+    <nav class="actions">
+      <a routerLink="/facturas" class="action">Ver todas las facturas</a>
+      <a routerLink="/vendedores" class="action">Gestionar vendedores</a>
+    </nav>
+  } @else if (loading()) {
     <p class="page__subtitle">Cargando...</p>
   } @else {
-    @if (summary(); as s) {
-      <div class="metrics">
-        <div class="metric-card">
-          <span class="metric-card__label">Facturas totales</span>
-          <span class="metric-card__value">{{ s.totalInvoices }}</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-card__label">Facturas de hoy</span>
-          <span class="metric-card__value">{{ s.invoicesToday }}</span>
-        </div>
-        <div class="metric-card metric-card--highlight">
-          <span class="metric-card__label">Total vendido</span>
-          <span class="metric-card__value money">{{ s.totalSold | cop }}</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-card__label">Vendedores activos</span>
-          <span class="metric-card__value">{{ s.activeSellers }}</span>
-        </div>
-        <div class="metric-card">
-          <span class="metric-card__label">Clientes registrados</span>
-          <span class="metric-card__value">{{ s.registeredClients }}</span>
-        </div>
-      </div>
-
-      <div class="quick-links">
-        <a routerLink="/facturas" class="quick-link">Ver todas las facturas →</a>
-        <a routerLink="/vendedores" class="quick-link">Gestionar vendedores →</a>
-      </div>
-    }
+    <!-- Antes, si fallaba la carga, la pantalla quedaba vacia sin explicar nada. -->
+    <p class="page__subtitle">No se pudo cargar el resumen. Recarga la pagina para intentarlo de nuevo.</p>
   }
 </div>
