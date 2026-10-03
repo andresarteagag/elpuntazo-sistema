@@ -1,0 +1,9 @@
+{
+  "name": "elpuntazo-sistema",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Raiz del repositorio. Existe para que Vercel prepare el entorno Node y construya la funcion de api/ (el frontend vive en frontend/).",
+  "engines": {
+    "node": "22.x"
+  }
+}
