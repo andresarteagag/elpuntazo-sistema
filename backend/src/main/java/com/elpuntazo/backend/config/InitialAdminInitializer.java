@@ -3,64 +3,72 @@ package com.elpuntazo.backend.config;
 import com.elpuntazo.backend.entity.Role;
 import com.elpuntazo.backend.entity.User;
 import com.elpuntazo.backend.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
- * Crea el primer usuario ADMIN al arrancar la aplicacion, unicamente
- * si todavia no existe ningun administrador en la base de datos.
- * Las credenciales se toman de variables de entorno para no dejar
- * nada quemado en el codigo. Una vez creado, el propio administrador
- * puede crear a los vendedores desde la aplicacion.
+ * Crea al arrancar los administradores configurados que todavia no
+ * existan en la base de datos.
+ *
+ * Regla importante: un usuario que YA existe nunca se modifica. Ni su
+ * contrasena, ni su rol, ni su estado. Por eso agregar un administrador
+ * nuevo es una operacion segura: no afecta a los que ya estan trabajando.
+ *
+ * Como consecuencia, cambiar la contrasena en la variable de entorno NO
+ * cambia la del usuario ya creado: manda lo que esta en la base de datos.
  */
 @Configuration
 public class InitialAdminInitializer {
 
-    @Value("${app.initial-admin.email:}")
-    private String initialAdminEmail;
+    private static final Logger log = LoggerFactory.getLogger(InitialAdminInitializer.class);
+    private static final String NOMBRE_POR_DEFECTO = "Administrador";
 
-    @Value("${app.initial-admin.password:}")
-    private String initialAdminPassword;
-
-    @Value("${app.initial-admin.name:Administrador}")
-    private String initialAdminName;
-
+    private final AdminSeedProperties properties;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public InitialAdminInitializer(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public InitialAdminInitializer(AdminSeedProperties properties,
+                                    UserRepository userRepository,
+                                    PasswordEncoder passwordEncoder) {
+        this.properties = properties;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    @org.springframework.context.annotation.Bean
-    public CommandLineRunner createInitialAdmin() {
-        return args -> {
-            boolean anyAdminExists = userRepository.findAll().stream()
-                    .anyMatch(u -> u.getRole() == Role.ADMIN);
+    @Bean
+    public CommandLineRunner crearAdministradoresConfigurados() {
+        return args -> properties.getAdmins().forEach(this::crearSiNoExiste);
+    }
 
-            if (anyAdminExists) {
-                return;
-            }
+    private void crearSiNoExiste(AdminSeedProperties.Admin admin) {
+        // Entrada sin configurar (la variable de entorno no esta puesta).
+        if (esVacio(admin.getEmail()) || esVacio(admin.getPassword())) {
+            return;
+        }
 
-            if (initialAdminEmail == null || initialAdminEmail.isBlank()
-                    || initialAdminPassword == null || initialAdminPassword.isBlank()) {
-                // No hay credenciales configuradas: no se crea nada.
-                // Ver README para configurar INITIAL_ADMIN_EMAIL / INITIAL_ADMIN_PASSWORD.
-                return;
-            }
+        String email = admin.getEmail().trim();
 
-            User admin = User.builder()
-                    .name(initialAdminName)
-                    .email(initialAdminEmail)
-                    .passwordHash(passwordEncoder.encode(initialAdminPassword))
-                    .role(Role.ADMIN)
-                    .active(true)
-                    .build();
+        if (userRepository.existsByEmail(email)) {
+            return;
+        }
 
-            userRepository.save(admin);
-        };
+        User nuevo = User.builder()
+                .name(esVacio(admin.getName()) ? NOMBRE_POR_DEFECTO : admin.getName().trim())
+                .email(email)
+                .passwordHash(passwordEncoder.encode(admin.getPassword()))
+                .role(Role.ADMIN)
+                .active(true)
+                .build();
+
+        userRepository.save(nuevo);
+        log.info("Administrador creado: {}", email);
+    }
+
+    private boolean esVacio(String valor) {
+        return valor == null || valor.isBlank();
     }
 }

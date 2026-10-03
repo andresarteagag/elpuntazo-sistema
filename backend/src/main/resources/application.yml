@@ -54,10 +54,17 @@ app:
     # Separar varios origenes con comas. Admite comodines, por ejemplo:
     #   https://elpuntazo.vercel.app,https://*.vercel.app
     allowed-origins: ${ALLOWED_ORIGINS:http://localhost:4200}
-  initial-admin:
-    email: ${INITIAL_ADMIN_EMAIL:}
-    password: ${INITIAL_ADMIN_PASSWORD:}
-    name: ${INITIAL_ADMIN_NAME:Administrador}
+  # Administradores que debe tener el sistema. Se crean al arrancar solo si
+  # su correo todavia no existe; a los usuarios ya creados no se les toca
+  # nada. Para agregar otro administrador, anade una entrada aqui y define
+  # sus variables en el servidor. Las contrasenas nunca van en el codigo.
+  admins:
+    - email: ${INITIAL_ADMIN_EMAIL:}
+      password: ${INITIAL_ADMIN_PASSWORD:}
+      name: ${INITIAL_ADMIN_NAME:Administrador}
+    - email: ${SECOND_ADMIN_EMAIL:}
+      password: ${SECOND_ADMIN_PASSWORD:}
+      name: ${SECOND_ADMIN_NAME:Administrador}
 
 logging:
   level:
