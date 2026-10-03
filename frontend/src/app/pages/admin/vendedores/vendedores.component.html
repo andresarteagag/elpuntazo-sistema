@@ -7,7 +7,7 @@
   @if (loading()) {
     <p class="page__subtitle">Cargando vendedores...</p>
   } @else if (sellers().length === 0) {
-    <p class="page__subtitle">Aun no has creado ningun vendedor.</p>
+    <p class="empty">Aun no has creado ningun vendedor.</p>
   } @else {
     <div class="table-wrapper">
       <table class="table">

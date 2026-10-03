@@ -35,7 +35,7 @@
   @if (loading()) {
     <p class="page__subtitle">Cargando facturas...</p>
   } @else if (invoices().length === 0) {
-    <p class="page__subtitle">No se encontraron facturas con estos filtros.</p>
+    <p class="empty">No se encontraron facturas con estos filtros.</p>
   } @else {
     <div class="table-wrapper">
       <table class="table">

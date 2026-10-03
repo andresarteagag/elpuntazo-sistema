@@ -4,7 +4,7 @@
     <button type="button" class="btn btn--primary" (click)="openCreate()">+ Nuevo cliente</button>
   </div>
 
-  <label class="field" style="margin-bottom: 20px;">
+  <label class="field field--search">
     <span class="field__label">Buscar</span>
     <input
       type="text"
@@ -18,7 +18,7 @@
   @if (loading()) {
     <p class="page__subtitle">Cargando clientes...</p>
   } @else if (clients().length === 0) {
-    <p class="page__subtitle">No se encontraron clientes.</p>
+    <p class="empty">No se encontraron clientes.</p>
   } @else {
     <div class="table-wrapper">
       <table class="table">
