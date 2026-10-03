@@ -188,7 +188,7 @@ select.field__input {
 
 .table__actions {
   display: flex;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .badge {
@@ -227,22 +227,33 @@ select.field__input {
    de componente y no aplica a las demas paginas, asi que "Editar",
    "Desactivar", "PDF" y "Anular" se veian con el gris del navegador. */
 .link-btn {
-  background: none;
-  border: none;
-  padding: var(--space-1) 0;
-  color: var(--color-brand);
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
+  padding: 7px 12px;
+  color: var(--color-brand);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 .link-btn:hover {
-  text-decoration: underline;
+  background: var(--color-brand-light);
+  border-color: var(--color-brand);
 }
 
+/* Acciones destructivas (anular, desactivar): mismo tamano que el resto,
+   el color es lo unico que avisa. No se les da mas peso visual para que
+   no compitan con la accion normal. */
 .link-btn--danger {
   color: var(--color-danger);
+}
+
+.link-btn--danger:hover {
+  background: var(--color-danger-light);
+  border-color: var(--color-danger);
 }
 
 .btn--danger {
