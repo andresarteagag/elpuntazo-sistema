@@ -32,18 +32,22 @@
         <label class="field">
           <span class="field__label">Valor base</span>
           <input
-            type="number"
-            inputmode="decimal"
+            type="text"
+            inputmode="numeric"
             class="field__input field__input--money"
             formControlName="baseValue"
             placeholder="0"
+            (blur)="normalizarMonto('baseValue')"
           />
+          @if (baseValue() > 0) {
+            <span class="field__amount money">{{ baseValue() | cop }}</span>
+          }
         </label>
 
         <label class="field">
           <span class="field__label">Descuento (%)</span>
           <input
-            type="number"
+            type="text"
             inputmode="decimal"
             class="field__input"
             formControlName="discountPercentage"
@@ -54,23 +58,31 @@
         <label class="field">
           <span class="field__label">Flete de envio</span>
           <input
-            type="number"
-            inputmode="decimal"
+            type="text"
+            inputmode="numeric"
             class="field__input field__input--money"
             formControlName="shippingValue"
             placeholder="0"
+            (blur)="normalizarMonto('shippingValue')"
           />
+          @if (shippingValue() > 0) {
+            <span class="field__amount money">{{ shippingValue() | cop }}</span>
+          }
         </label>
 
         <label class="field">
           <span class="field__label">Flete asumido por El Puntazo (opcional)</span>
           <input
-            type="number"
-            inputmode="decimal"
+            type="text"
+            inputmode="numeric"
             class="field__input field__input--money"
             formControlName="shippingAssumedByCompany"
             placeholder="0"
+            (blur)="normalizarMonto('shippingAssumedByCompany')"
           />
+          @if (shippingAssumed() > 0) {
+            <span class="field__amount money">{{ shippingAssumed() | cop }}</span>
+          }
           <span class="field__hint">Si El Puntazo cubre parte o todo el envio, escribe cuanto aqui. Ese valor se resta del total.</span>
           @if (shippingAssumedExceedsShipping()) {
             <span class="field__error">No puede ser mayor al flete de envio.</span>
@@ -80,12 +92,16 @@
         <label class="field">
           <span class="field__label">Garantia / Devolucion (opcional)</span>
           <input
-            type="number"
-            inputmode="decimal"
+            type="text"
+            inputmode="numeric"
             class="field__input field__input--money"
             formControlName="warrantyDeduction"
             placeholder="0"
+            (blur)="normalizarMonto('warrantyDeduction')"
           />
+          @if (warranty() > 0) {
+            <span class="field__amount money">{{ warranty() | cop }}</span>
+          }
           <span class="field__hint">Si aplica una garantia o devolucion, escribe el valor aqui. Tambien se resta del total.</span>
         </label>
       </form>
@@ -101,18 +117,18 @@
         </div>
         <div class="calc-summary__row">
           <span>Flete de envio</span>
-          <span class="money">{{ form.controls.shippingValue.value | cop }}</span>
+          <span class="money">{{ shippingValue() | cop }}</span>
         </div>
-        @if (form.controls.shippingAssumedByCompany.value > 0) {
+        @if (shippingAssumed() > 0) {
           <div class="calc-summary__row">
             <span>Flete asumido por El Puntazo</span>
-            <span class="money">-{{ form.controls.shippingAssumedByCompany.value | cop }}</span>
+            <span class="money">-{{ shippingAssumed() | cop }}</span>
           </div>
         }
-        @if (form.controls.warrantyDeduction.value > 0) {
+        @if (warranty() > 0) {
           <div class="calc-summary__row">
             <span>Garantia / Devolucion</span>
-            <span class="money">-{{ form.controls.warrantyDeduction.value | cop }}</span>
+            <span class="money">-{{ warranty() | cop }}</span>
           </div>
         }
         <div class="calc-summary__row calc-summary__row--total">
@@ -142,10 +158,10 @@
       </div>
       <div class="preview__row">
         <span>Valor base</span>
-        <strong class="money">{{ form.controls.baseValue.value | cop }}</strong>
+        <strong class="money">{{ baseValue() | cop }}</strong>
       </div>
       <div class="preview__row">
-        <span>Descuento ({{ form.controls.discountPercentage.value }}%)</span>
+        <span>Descuento ({{ discountPercentage() }}%)</span>
         <strong class="money">-{{ discountValue() | cop }}</strong>
       </div>
       <div class="preview__row">
@@ -154,18 +170,18 @@
       </div>
       <div class="preview__row">
         <span>Flete de envio</span>
-        <strong class="money">{{ form.controls.shippingValue.value | cop }}</strong>
+        <strong class="money">{{ shippingValue() | cop }}</strong>
       </div>
-      @if (form.controls.shippingAssumedByCompany.value > 0) {
+      @if (shippingAssumed() > 0) {
         <div class="preview__row">
           <span>Flete asumido por El Puntazo</span>
-          <strong class="money">-{{ form.controls.shippingAssumedByCompany.value | cop }}</strong>
+          <strong class="money">-{{ shippingAssumed() | cop }}</strong>
         </div>
       }
-      @if (form.controls.warrantyDeduction.value > 0) {
+      @if (warranty() > 0) {
         <div class="preview__row">
           <span>Garantia / Devolucion</span>
-          <strong class="money">-{{ form.controls.warrantyDeduction.value | cop }}</strong>
+          <strong class="money">-{{ warranty() | cop }}</strong>
         </div>
       }
       <div class="preview__row preview__row--total">

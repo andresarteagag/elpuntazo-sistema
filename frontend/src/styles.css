@@ -186,6 +186,14 @@ select.field__input {
   background: var(--color-bg);
 }
 
+/* Las cifras se alinean a la derecha para que unidades, miles y millones
+   queden en columna: asi se distingue de un vistazo 47.000 de 470.000,
+   que alineados a la izquierda se parecen demasiado. */
+.table td.money,
+.table th.money {
+  text-align: right;
+}
+
 .table__actions {
   display: flex;
   gap: var(--space-2);

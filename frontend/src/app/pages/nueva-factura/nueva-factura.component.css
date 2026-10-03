@@ -206,3 +206,12 @@
     font-size: 16px; /* evita zoom automatico en iOS */
   }
 }
+
+/* Eco del monto ya formateado mientras se escribe. Sin el, 470000 y
+   4700000 se parecen demasiado y un cero de mas es un error de diez
+   veces el valor que no se ve hasta la vista previa. */
+.field__amount {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-brand);
+}
