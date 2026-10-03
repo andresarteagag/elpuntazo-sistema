@@ -20,8 +20,12 @@
     </nav>
 
     <div class="sidebar__user">
+      <span class="sidebar__user-role">{{ auth.isAdmin() ? 'Administrador' : 'Vendedor' }}</span>
       <div class="sidebar__user-name">{{ auth.currentUser()?.name }}</div>
-      <div class="sidebar__user-role">{{ auth.isAdmin() ? 'Administrador' : 'Vendedor' }}</div>
+      <!-- El correo, no el rol: cuando el usuario se llama "Administrador"
+           y el rol tambien, la linea se repetia y parecia un error. Ademas
+           el correo es con lo que se inicia sesion. -->
+      <div class="sidebar__user-email" [title]="auth.currentUser()?.email">{{ auth.currentUser()?.email }}</div>
       <button type="button" class="sidebar__logout" (click)="logout()">Cerrar sesion</button>
     </div>
   </aside>

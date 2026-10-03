@@ -48,12 +48,14 @@
 }
 
 .nav-link {
-  color: rgba(255, 255, 255, 0.8);
+  position: relative;
+  color: rgba(255, 255, 255, 0.78);
   text-decoration: none;
-  padding: 10px 12px;
+  padding: 10px 12px 10px 15px;
   border-radius: var(--radius-sm);
   font-size: 14px;
   font-weight: 500;
+  transition: background 120ms ease, color 120ms ease;
 }
 
 .nav-link:hover {
@@ -62,8 +64,22 @@
 }
 
 .nav-link--active {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.16);
   color: white;
+  font-weight: 600;
+}
+
+/* Barra a la izquierda: con solo el fondo mas claro costaba ver de un
+   vistazo en que seccion estabas. */
+.nav-link--active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  bottom: 9px;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: white;
 }
 
 .sidebar__user {
@@ -71,26 +87,48 @@
   padding-top: var(--space-4);
 }
 
+.sidebar__user-role {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: var(--space-1);
+}
+
 .sidebar__user-name {
   font-weight: 600;
   font-size: 14px;
 }
 
-.sidebar__user-role {
-  color: rgba(255, 255, 255, 0.6);
+/* El correo puede ser largo y la barra mide 240px: se recorta con
+   puntos suspensivos y queda completo en el tooltip. */
+.sidebar__user-email {
   font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
   margin-bottom: var(--space-3);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sidebar__logout {
   background: none;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.35);
   color: white;
   border-radius: var(--radius-sm);
-  padding: 8px 12px;
+  padding: 9px 12px;
   font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   width: 100%;
+  transition: background 120ms ease, border-color 120ms ease;
+}
+
+.sidebar__logout:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.6);
 }
 
 .content {
