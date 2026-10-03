@@ -26,7 +26,6 @@ spring:
       # en desarrollo. Ojo: "validate" falla contra MySQL cuando las columnas
       # son de tipo ENUM (role, status), porque Hibernate espera VARCHAR.
       ddl-auto: ${DDL_AUTO:none}
-    open-in-view: false
     show-sql: false
     properties:
       hibernate:
