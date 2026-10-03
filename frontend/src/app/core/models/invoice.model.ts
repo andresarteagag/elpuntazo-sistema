@@ -19,6 +19,7 @@ export interface Invoice {
 }
 
 export interface InvoiceRequest {
+  invoiceNumber: string;
   clientName: string;
   baseValue: number;
   discountPercentage: number;

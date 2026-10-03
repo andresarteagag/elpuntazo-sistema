@@ -138,6 +138,12 @@
   padding-bottom: var(--space-7);
 }
 
+/* --- Barra superior (solo celular) --- */
+
+.topbar {
+  display: none;
+}
+
 /* --- Bottom nav (celular) --- */
 
 .bottom-nav {
@@ -147,6 +153,42 @@
 @media (max-width: 900px) {
   .sidebar {
     display: none;
+  }
+
+  /* Sin la barra lateral, el shell deja de ser dos columnas: la barra
+     superior debe quedar ENCIMA del contenido, no a su lado. */
+  .shell {
+    flex-direction: column;
+  }
+
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-brand-dark);
+    color: white;
+  }
+
+  .topbar__brand {
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .topbar__logout {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: var(--radius-sm);
+    color: white;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 12px;
+    cursor: pointer;
   }
 
   .content {

@@ -5,7 +5,6 @@ import com.elpuntazo.backend.dto.InvoiceResponse;
 import com.elpuntazo.backend.entity.*;
 import com.elpuntazo.backend.exception.BusinessException;
 import com.elpuntazo.backend.repository.InvoiceRepository;
-import com.elpuntazo.backend.repository.InvoiceSequenceRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -20,12 +19,9 @@ import java.time.LocalDate;
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
-    private final InvoiceSequenceRepository sequenceRepository;
 
-    public InvoiceService(InvoiceRepository invoiceRepository,
-                           InvoiceSequenceRepository sequenceRepository) {
+    public InvoiceService(InvoiceRepository invoiceRepository) {
         this.invoiceRepository = invoiceRepository;
-        this.sequenceRepository = sequenceRepository;
     }
 
     /**
@@ -35,6 +31,14 @@ public class InvoiceService {
      */
     @Transactional
     public InvoiceResponse create(InvoiceRequest request, User seller) {
+        // El numero lo escribe el vendedor. La columna es unica en la base
+        // de datos, asi que se avisa con un mensaje claro antes de intentar
+        // guardar y chocar con un error tecnico.
+        String invoiceNumber = request.invoiceNumber().trim();
+        if (invoiceRepository.findByInvoiceNumber(invoiceNumber).isPresent()) {
+            throw new BusinessException("Ya existe una factura con el numero " + invoiceNumber + ".");
+        }
+
         BigDecimal baseValue = request.baseValue();
         BigDecimal discountPercentage = request.discountPercentage();
         BigDecimal shippingValue = request.shippingValue();
@@ -67,7 +71,7 @@ public class InvoiceService {
         }
 
         Invoice invoice = Invoice.builder()
-                .invoiceNumber(nextInvoiceNumber())
+                .invoiceNumber(invoiceNumber)
                 .clientName(request.clientName().trim())
                 .seller(seller)
                 .baseValue(baseValue)
@@ -158,27 +162,4 @@ public class InvoiceService {
         }
     }
 
-    /**
-     * Si la fila contadora todavia no existe (base de datos recien creada
-     * donde no se alcanzo a ejecutar el INSERT de db/schema.sql) se crea
-     * aqui con el numero en cero, en vez de dejar caer la factura con un
-     * error tecnico.
-     */
-    private String nextInvoiceNumber() {
-        InvoiceSequence sequence = sequenceRepository.lockForUpdate()
-                .orElseGet(this::createInitialSequence);
-
-        long next = sequence.getLastNumber() + 1;
-        sequence.setLastNumber(next);
-        sequenceRepository.save(sequence);
-        return "A-" + String.format("%06d", next);
-    }
-
-    private InvoiceSequence createInitialSequence() {
-        InvoiceSequence sequence = new InvoiceSequence();
-        sequence.setId(1);
-        sequence.setLastNumber(0L);
-        return sequenceRepository.save(sequence);
-    }
 }
-

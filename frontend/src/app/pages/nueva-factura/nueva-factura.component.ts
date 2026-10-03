@@ -72,6 +72,7 @@ export class NuevaFacturaComponent {
   createdInvoiceNumber = signal<string | null>(null);
 
   form = this.fb.nonNullable.group({
+    invoiceNumber: ['', [Validators.required, Validators.maxLength(30)]],
     clientName: ['', Validators.required],
     baseValue: ['', [Validators.required, montoMinimo(1)]],
     discountPercentage: ['', porcentajeEntre(0, 100)],
@@ -139,6 +140,7 @@ export class NuevaFacturaComponent {
 
     this.invoiceService
       .create({
+        invoiceNumber: this.form.controls.invoiceNumber.value.trim(),
         clientName: this.form.controls.clientName.value.trim(),
         baseValue: this.baseValue(),
         discountPercentage: this.discountPercentage(),
@@ -167,6 +169,7 @@ export class NuevaFacturaComponent {
 
   startAnother(): void {
     this.form.reset({
+      invoiceNumber: '',
       clientName: '',
       baseValue: '',
       discountPercentage: '',

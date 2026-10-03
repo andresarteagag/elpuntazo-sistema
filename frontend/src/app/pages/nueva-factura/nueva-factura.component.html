@@ -7,9 +7,23 @@
     </header>
 
     <section class="card">
-      <h2 class="card__title">1. Cliente</h2>
+      <h2 class="card__title">1. Factura y cliente</h2>
 
-      <form [formGroup]="form">
+      <form [formGroup]="form" class="invoice-form">
+        <label class="field">
+          <span class="field__label">Numero de sistema</span>
+          <input
+            type="text"
+            class="field__input"
+            formControlName="invoiceNumber"
+            placeholder="Escribe el numero de la factura"
+            maxlength="30"
+          />
+          @if (form.controls.invoiceNumber.touched && form.controls.invoiceNumber.invalid) {
+            <span class="field__error">Escribe el numero de sistema.</span>
+          }
+        </label>
+
         <label class="field">
           <span class="field__label">Nombre del cliente</span>
           <input
@@ -152,6 +166,10 @@
     </header>
 
     <section class="card preview">
+      <div class="preview__row">
+        <span>Numero de sistema</span>
+        <strong>{{ form.controls.invoiceNumber.value }}</strong>
+      </div>
       <div class="preview__row">
         <span>Cliente</span>
         <strong>{{ form.controls.clientName.value }}</strong>

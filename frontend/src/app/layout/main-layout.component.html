@@ -30,6 +30,11 @@
     </div>
   </aside>
 
+  <header class="topbar">
+    <span class="topbar__brand">El Puntazo</span>
+    <button type="button" class="topbar__logout" (click)="logout()">Cerrar sesion</button>
+  </header>
+
   <main class="content">
     <router-outlet></router-outlet>
   </main>
@@ -56,10 +61,6 @@
       <a routerLink="/vendedores" routerLinkActive="bottom-nav__item--active" class="bottom-nav__item">
         <span>Vendedores</span>
       </a>
-    } @else {
-      <button type="button" class="bottom-nav__item bottom-nav__item--button" (click)="logout()">
-        <span>Salir</span>
-      </button>
     }
   </nav>
 </div>
