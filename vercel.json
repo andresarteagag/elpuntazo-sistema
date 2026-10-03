@@ -7,6 +7,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/api/:path*",
+      "destination": "https://elpuntazo-sistema-production.up.railway.app/api/:path*"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
@@ -42,6 +46,10 @@
     {
       "source": "/(.*)",
       "headers": [
+        {
+          "key": "X-Config-Source",
+          "value": "raiz"
+        },
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
