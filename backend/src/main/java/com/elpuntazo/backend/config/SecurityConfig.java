@@ -21,6 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Configuration
 @EnableMethodSecurity
@@ -31,6 +32,26 @@ public class SecurityConfig {
 
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
+
+    /**
+     * Dominios propios del frontend, permitidos SIEMPRE ademas de lo que
+     * diga ALLOWED_ORIGINS.
+     *
+     * Vercel le anade un sufijo aleatorio al dominio de produccion (por eso
+     * es "elpuntazo-sistema-mu" y no "elpuntazo-sistema") y genera uno
+     * distinto en cada despliegue de preview. Sin esto, basta con que la
+     * variable quede desactualizada para que nadie pueda iniciar sesion,
+     * que es exactamente lo que ocurrio: el navegador recibia
+     * 403 "Invalid CORS request" y mostraba "No se pudo conectar con el
+     * servidor".
+     *
+     * El patron se limita a los dominios de esta aplicacion; no se abre
+     * "*.vercel.app" entero.
+     */
+    private static final List<String> FRONTEND_PROPIO = List.of(
+            "https://elpuntazo-sistema.vercel.app",
+            "https://elpuntazo-sistema-*.vercel.app"
+    );
 
     public SecurityConfig(AppUserDetailsService userDetailsService, JwtAuthFilter jwtAuthFilter) {
         this.userDetailsService = userDetailsService;
@@ -67,9 +88,12 @@ public class SecurityConfig {
      */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
-        List<String> origins = Arrays.stream(allowedOrigins.split(","))
-                .map(String::trim)
-                .filter(origin -> !origin.isEmpty())
+        List<String> origins = Stream.concat(
+                        Arrays.stream(allowedOrigins.split(","))
+                                .map(String::trim)
+                                .filter(origin -> !origin.isEmpty()),
+                        FRONTEND_PROPIO.stream())
+                .distinct()
                 .toList();
 
         CorsConfiguration configuration = new CorsConfiguration();
